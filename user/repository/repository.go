@@ -9,6 +9,7 @@ import (
 
 type Repository interface {
 	Register(payload entity.RegisterUserPayload) (*entity.User, error)
+	Login(payload entity.LoginUserPayload) (*entity.User, error)
 }
 
 type repository struct {
@@ -30,6 +31,20 @@ func (r *repository) Register(payload entity.RegisterUserPayload) (*entity.User,
 	}
 
 	if err := r.db.Create(&user).Error; err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
+func (r *repository) Login(payload entity.LoginUserPayload) (*entity.User, error) {
+	var user entity.User
+
+	if err := r.db.Where("email = ?", payload.Email).First(&user).Error; err != nil {
+		return nil, err
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(payload.Password)); err != nil {
 		return nil, err
 	}
 

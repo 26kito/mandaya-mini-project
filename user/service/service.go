@@ -2,7 +2,9 @@ package service
 
 import (
 	"net/http"
+	"strconv"
 	"user/entity"
+	"user/helper"
 	"user/repository"
 
 	"github.com/labstack/echo/v4"
@@ -32,4 +34,29 @@ func (us *Service) Register(c echo.Context) error {
 		"message": "success",
 	})
 
+}
+
+func (us *Service) Login(c echo.Context) error {
+	var payload entity.LoginUserPayload
+
+	if err := c.Bind(&payload); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
+	}
+
+	user, err := us.repo.Login(payload)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
+	}
+
+	userId := strconv.Itoa(int(user.ID))
+
+	token, err := helper.GenerateJWTToken(userId)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"message": "success",
+		"token":   token,
+	})
 }

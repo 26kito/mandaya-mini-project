@@ -23,6 +23,7 @@ func Routes() {
 	e := echo.New()
 
 	e.POST("/register", service.Register)
+	e.POST("/login", service.Login)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
