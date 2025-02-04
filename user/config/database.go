@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"user/entity"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -25,6 +26,8 @@ func InitDatabase() (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	db.AutoMigrate(&entity.User{})
 
 	log.Println("Database connection established")
 

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"user/config"
 
 	"github.com/joho/godotenv"
@@ -10,9 +9,5 @@ import (
 func main() {
 	godotenv.Load()
 
-	// Initialize database
-	db, err := config.InitDatabase()
-	if err != nil {
-		log.Println(err)
-	}
+	config.Routes()
 }
