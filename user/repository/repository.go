@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"user/entity"
 
 	"golang.org/x/crypto/bcrypt"
@@ -41,11 +42,11 @@ func (r *repository) Login(payload entity.LoginUserPayload) (*entity.User, error
 	var user entity.User
 
 	if err := r.db.Where("email = ?", payload.Email).First(&user).Error; err != nil {
-		return nil, err
+		return nil, fmt.Errorf("email or password is incorrect")
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(payload.Password)); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("email or password is incorrect")
 	}
 
 	return &user, nil
