@@ -22,6 +22,7 @@ func Routes() {
 	service := service.NewService(repo)
 
 	e.GET("/hotels", service.GetHotelList)
+	e.GET("/hotels/:id", service.GetHotelByID)
 
 	e.Logger.Fatal(e.Start(":8081"))
 }

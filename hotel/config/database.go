@@ -27,7 +27,7 @@ func InitDatabase() (*gorm.DB, error) {
 		return nil, err
 	}
 
-	db.AutoMigrate(&entity.Hotel{})
+	db.AutoMigrate(&entity.Hotel{}, &entity.Room{})
 
 	log.Println("Database connection established")
 

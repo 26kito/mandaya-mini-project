@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"hotel/entity"
 
 	"gorm.io/gorm"
@@ -8,6 +9,7 @@ import (
 
 type Repository interface {
 	GetHotelList() (*[]entity.Hotel, error)
+	GetHotelByID(id int) (*entity.HotelRoom, error)
 }
 
 type repository struct {
@@ -27,4 +29,18 @@ func (r *repository) GetHotelList() (*[]entity.Hotel, error) {
 	}
 
 	return &hotels, nil
+}
+
+func (r *repository) GetHotelByID(id int) (*entity.HotelRoom, error) {
+	var hotel entity.HotelRoom
+
+	result := r.db.Table("hotels").Where("id = ?", id).Preload("Rooms").First(&hotel)
+	if result.Error != nil {
+		if result.Error == gorm.ErrRecordNotFound {
+			return nil, fmt.Errorf("hotel with ID %d not found", id)
+		}
+		return nil, result.Error
+	}
+
+	return &hotel, nil
 }

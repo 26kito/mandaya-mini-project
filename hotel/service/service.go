@@ -2,6 +2,7 @@ package service
 
 import (
 	"hotel/repository"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
@@ -25,5 +26,27 @@ func (s *Service) GetHotelList(c echo.Context) error {
 	return c.JSON(200, map[string]interface{}{
 		"message": "success",
 		"data":    hotels,
+	})
+}
+
+func (s *Service) GetHotelByID(c echo.Context) error {
+	idParam := c.Param("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		return c.JSON(400, map[string]interface{}{
+			"message": err.Error(),
+		})
+	}
+
+	hotel, err := s.repo.GetHotelByID(id)
+	if err != nil {
+		return c.JSON(500, map[string]interface{}{
+			"message": err.Error(),
+		})
+	}
+
+	return c.JSON(200, map[string]interface{}{
+		"message": "success",
+		"data":    hotel,
 	})
 }
