@@ -31,6 +31,10 @@ func (r *repository) Register(payload entity.RegisterUserPayload) (*entity.User,
 		Password: string(hashedPassword),
 	}
 
+	if err := r.validateRegister(payload); err != nil {
+		return nil, err
+	}
+
 	if err := r.db.Create(&user).Error; err != nil {
 		return nil, err
 	}
@@ -50,4 +54,16 @@ func (r *repository) Login(payload entity.LoginUserPayload) (*entity.User, error
 	}
 
 	return &user, nil
+}
+
+func (r *repository) validateRegister(payload entity.RegisterUserPayload) error {
+	if err := r.db.Where("email = ?", payload.Email).First(&entity.User{}).Error; err == nil {
+		return fmt.Errorf("Email already exists")
+	}
+
+	if err := r.db.Where("nik = ?", payload.NIK).First(&entity.User{}).Error; err == nil {
+		return fmt.Errorf("NIK already exists")
+	}
+
+	return nil
 }

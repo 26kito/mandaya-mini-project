@@ -5,7 +5,7 @@ type User struct {
 	FullName string `json:"full_name"`
 	NIK      string `json:"nik"`
 	Email    string `json:"email"`
-	Password string `json:"password"`
+	Password string `json:"-"`
 }
 
 type RegisterUserPayload struct {
