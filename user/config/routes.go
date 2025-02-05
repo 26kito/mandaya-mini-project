@@ -2,6 +2,7 @@ package config
 
 import (
 	"log"
+	"user/middleware"
 	"user/repository"
 	"user/service"
 
@@ -24,6 +25,7 @@ func Routes() {
 
 	e.POST("/register", service.Register)
 	e.POST("/login", service.Login)
+	e.GET("/profile", service.GetUserById, middleware.ValidateJWTMiddleware)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }

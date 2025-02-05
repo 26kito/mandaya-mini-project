@@ -11,6 +11,7 @@ import (
 type Repository interface {
 	Register(payload entity.RegisterUserPayload) (*entity.User, error)
 	Login(payload entity.LoginUserPayload) (*entity.User, error)
+	GetUserById(id int) (*entity.User, error)
 }
 
 type repository struct {
@@ -51,6 +52,16 @@ func (r *repository) Login(payload entity.LoginUserPayload) (*entity.User, error
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(payload.Password)); err != nil {
 		return nil, fmt.Errorf("email or password is incorrect")
+	}
+
+	return &user, nil
+}
+
+func (r *repository) GetUserById(id int) (*entity.User, error) {
+	var user entity.User
+
+	if err := r.db.Where("id = ?", id).First(&user).Error; err != nil {
+		return nil, err
 	}
 
 	return &user, nil

@@ -9,6 +9,7 @@ import (
 	"user/helper"
 	"user/repository"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 )
 
@@ -68,6 +69,27 @@ func (us *Service) Login(c echo.Context) error {
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"message": "success",
 		"token":   token,
+	})
+}
+
+func (us *Service) GetUserById(c echo.Context) error {
+	// Get user_id from JWT
+	getUserId := c.Get("user").(jwt.MapClaims)["user_id"].(string)
+
+	// Convert string to int
+	userId, err := strconv.Atoi(getUserId)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
+	}
+
+	user, err := us.repo.GetUserById(userId)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"message": "success",
+		"data":    user,
 	})
 }
 
