@@ -1,9 +1,10 @@
 package config
 
 import (
-	"hotel/repository"
-	"hotel/service"
 	"log"
+	"reservation/middleware"
+	"reservation/repository"
+	"reservation/service"
 
 	"github.com/labstack/echo/v4"
 )
@@ -21,9 +22,7 @@ func Routes() {
 	repo := repository.NewRepository(db)
 	service := service.NewService(repo)
 
-	e.GET("/hotels", service.GetHotelList)
-	e.GET("/hotels/:id", service.GetHotelByID)
-	e.POST("/get-room-detail", service.GetRoomDetail)
+	e.POST("/reservation", service.Reservation, middleware.ValidateJWTMiddleware)
 
-	e.Logger.Fatal(e.Start(":8081"))
+	e.Logger.Fatal(e.Start(":8082"))
 }

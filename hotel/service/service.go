@@ -1,6 +1,7 @@
 package service
 
 import (
+	"hotel/entity"
 	"hotel/repository"
 	"strconv"
 
@@ -48,5 +49,27 @@ func (s *Service) GetHotelByID(c echo.Context) error {
 	return c.JSON(200, map[string]interface{}{
 		"message": "success",
 		"data":    hotel,
+	})
+}
+
+func (s *Service) GetRoomDetail(c echo.Context) error {
+	var payload entity.CheckRoomAvailabilityPayload
+
+	if err := c.Bind(&payload); err != nil {
+		return c.JSON(400, map[string]interface{}{
+			"message": err.Error(),
+		})
+	}
+
+	data, err := s.repo.GetRoomDetail(payload)
+	if err != nil {
+		return c.JSON(500, map[string]interface{}{
+			"message": err.Error(),
+		})
+	}
+
+	return c.JSON(200, map[string]interface{}{
+		"message": "success",
+		"data":    data,
 	})
 }

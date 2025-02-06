@@ -26,3 +26,17 @@ type Room struct {
 	Price      float64 `gorm:"not null" json:"price"`
 	Status     string  `gorm:"type:varchar(10);not null" json:"status"`
 }
+
+type CheckRoomAvailabilityPayload struct {
+	HotelID int `json:"hotel_id"`
+	RoomID  int `json:"room_id"`
+}
+
+type RoomResponse struct {
+	ID         uint    `json:"id"`
+	RoomNumber string  `json:"room_number"`
+	RoomType   string  `json:"room_type"`
+	MaxGuest   int     `json:"max_guest"`
+	Price      float64 `json:"price"`
+	Status     string  `json:"status"`
+}

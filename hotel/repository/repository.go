@@ -10,6 +10,7 @@ import (
 type Repository interface {
 	GetHotelList() (*[]entity.Hotel, error)
 	GetHotelByID(id int) (*entity.HotelRoom, error)
+	GetRoomDetail(payload entity.CheckRoomAvailabilityPayload) (*entity.Room, error)
 }
 
 type repository struct {
@@ -43,4 +44,18 @@ func (r *repository) GetHotelByID(id int) (*entity.HotelRoom, error) {
 	}
 
 	return &hotel, nil
+}
+
+func (r *repository) GetRoomDetail(payload entity.CheckRoomAvailabilityPayload) (*entity.Room, error) {
+	var room entity.Room
+
+	result := r.db.Table("rooms").Where("hotel_id = ? AND id = ?", payload.HotelID, payload.RoomID).First(&room)
+	if result.Error != nil {
+		if result.Error == gorm.ErrRecordNotFound {
+			return nil, fmt.Errorf("room with ID %d not found", payload.RoomID)
+		}
+		return nil, result.Error
+	}
+
+	return &room, nil
 }
