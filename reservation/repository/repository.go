@@ -14,6 +14,7 @@ import (
 
 type Repository interface {
 	Reservation(userId int, payload entity.ReservationPayload) (*entity.Reservation, error)
+	GetBookingByOrderID(orderID string) (*entity.Reservation, error)
 }
 
 type repository struct {
@@ -87,6 +88,20 @@ func (r *repository) Reservation(userId int, payload entity.ReservationPayload) 
 	}
 
 	return &reservation, nil
+}
+
+func (r *repository) GetBookingByOrderID(orderID string) (*entity.Reservation, error) {
+	var booking entity.Reservation
+
+	result := r.db.Where("booking_code = ?", orderID).First(&booking)
+	if result.Error != nil {
+		if result.Error.Error() == "record not found" {
+			return nil, fmt.Errorf("Booking code %s not found", orderID)
+		}
+		return nil, result.Error
+	}
+
+	return &booking, nil
 }
 
 func (r *repository) validateReservation(checkIn, checkOut time.Time) error {

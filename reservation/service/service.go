@@ -49,3 +49,19 @@ func (s *Service) Reservation(c echo.Context) error {
 		"data":    reservation,
 	})
 }
+
+func (s *Service) GetBookingByOrderID(c echo.Context) error {
+	orderID := c.Param("order_id")
+
+	booking, err := s.repo.GetBookingByOrderID(orderID)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"message": err.Error(),
+		})
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"message": "success",
+		"data":    booking,
+	})
+}

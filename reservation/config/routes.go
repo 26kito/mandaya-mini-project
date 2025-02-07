@@ -23,6 +23,7 @@ func Routes() {
 	service := service.NewService(repo)
 
 	e.POST("/reservation", service.Reservation, middleware.ValidateJWTMiddleware)
+	e.GET("/reservation/:order_id", service.GetBookingByOrderID)
 
 	e.Logger.Fatal(e.Start(":8082"))
 }
