@@ -39,7 +39,7 @@ func (pr *repository) GetBookingByOrderID(orderID string) (*entity.GetDetailBook
 
 	resp, err := client.R().
 		SetHeader("Content-Type", "application/json").
-		Get("http://localhost:8082/reservation/" + orderID)
+		Get("http://booking-service:8082/reservation/" + orderID)
 	if err != nil {
 		return nil, fmt.Errorf("500 | %v", err)
 	}
@@ -59,7 +59,7 @@ func (pr *repository) GetUserProfile(userID uint, tokenString string) (*entity.G
 	resp, err := client.R().
 		SetHeader("Content-Type", "application/json").
 		SetHeader("Authorization", "Bearer "+tokenString).
-		Get("http://localhost:8080/profile")
+		Get("http://user-service:8080/profile")
 	if err != nil {
 		return nil, fmt.Errorf("500 | %v", err)
 	}
@@ -72,11 +72,3 @@ func (pr *repository) GetUserProfile(userID uint, tokenString string) (*entity.G
 
 	return &user, nil
 }
-
-// func (pr *repository) validateBookingStatus(booking *entity.GetDetailBookingResponse) error {
-// 	if booking.Status != "pending" {
-// 		return fmt.Errorf("400 | Booking has been %s", booking.Status)
-// 	}
-
-// 	return nil
-// }

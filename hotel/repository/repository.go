@@ -51,7 +51,8 @@ func (r *repository) GetRoomDetail(payload entity.CheckRoomAvailabilityPayload) 
 
 	result := r.db.Table("rooms").Where("hotel_id = ? AND id = ?", payload.HotelID, payload.RoomID).First(&room)
 	if result.Error != nil {
-		if result.Error == gorm.ErrRecordNotFound {
+		if result.Error.Error() == "record not found" {
+			fmt.Println("room not found")
 			return nil, fmt.Errorf("room with ID %d not found", payload.RoomID)
 		}
 		return nil, result.Error

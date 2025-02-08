@@ -38,6 +38,12 @@ func (s *Service) Reservation(c echo.Context) error {
 		})
 	}
 
+	if err := s.validateReservation(payload); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"message": err.Error(),
+		})
+	}
+
 	reservation, err := s.repo.Reservation(userId, payload)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
@@ -99,4 +105,24 @@ func (s *Service) CheckIn(c echo.Context) error {
 		"message": "success",
 		"data":    reservation,
 	})
+}
+
+func (s *Service) validateReservation(payload entity.ReservationPayload) error {
+	if payload.CheckIn == "" {
+		return fmt.Errorf("check_in is required")
+	}
+
+	if payload.CheckOut == "" {
+		return fmt.Errorf("check_out is required")
+	}
+
+	if payload.HotelID == 0 {
+		return fmt.Errorf("hotel_id is required")
+	}
+
+	if payload.RoomID == 0 {
+		return fmt.Errorf("room_id is required")
+	}
+
+	return nil
 }

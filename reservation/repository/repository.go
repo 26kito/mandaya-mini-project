@@ -48,10 +48,21 @@ func (r *repository) Reservation(userId int, payload entity.ReservationPayload) 
 			"hotel_id": payload.HotelID,
 			"room_id":  payload.RoomID,
 		}).
-		Post("http://localhost:8081/get-room-detail")
-
+		Post("http://hotel-service:8081/get-room-detail")
 	if err != nil {
 		return nil, err
+	}
+
+	if resp.StatusCode() != 200 {
+		var errResponse map[string]interface{}
+		if err := json.Unmarshal(resp.Body(), &errResponse); err == nil {
+			if msg, ok := errResponse["message"].(string); ok {
+				log.Printf("Error from hotel-service: %s", msg)
+				return nil, fmt.Errorf("%v", msg)
+			}
+		}
+		log.Printf("Unexpected response: %s", resp.Body())
+		return nil, fmt.Errorf("failed to get room detail, status: %d", resp.StatusCode())
 	}
 
 	// Parse JSON response
