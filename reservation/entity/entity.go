@@ -38,3 +38,7 @@ type RoomData struct {
 	Price      float64 `json:"price"`
 	Status     string  `json:"status"`
 }
+
+type CheckInPayload struct {
+	OrderID string `json:"order_id"`
+}

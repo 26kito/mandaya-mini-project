@@ -68,3 +68,35 @@ func (s *Service) GetBookingByOrderID(c echo.Context) error {
 		"data":    booking,
 	})
 }
+
+func (s *Service) CheckIn(c echo.Context) error {
+	// Get user_id from JWT
+	getUserId := c.Get("user").(jwt.MapClaims)["user_id"].(string)
+
+	// Convert string to int
+	userId, err := strconv.Atoi(getUserId)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"message": err.Error(),
+		})
+	}
+
+	var payload entity.CheckInPayload
+	if err := c.Bind(&payload); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"message": err.Error(),
+		})
+	}
+
+	reservation, err := s.repo.CheckIn(userId, payload)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"message": err.Error(),
+		})
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"message": "success",
+		"data":    reservation,
+	})
+}

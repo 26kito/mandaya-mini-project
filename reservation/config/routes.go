@@ -24,6 +24,7 @@ func Routes() {
 
 	e.POST("/reservation", service.Reservation, middleware.ValidateJWTMiddleware)
 	e.GET("/reservation/:order_id", service.GetBookingByOrderID)
+	e.POST("/check-in", service.CheckIn, middleware.ValidateJWTMiddleware)
 
 	e.Logger.Fatal(e.Start(":8082"))
 }

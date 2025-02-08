@@ -15,6 +15,7 @@ import (
 type Repository interface {
 	Reservation(userId int, payload entity.ReservationPayload) (*entity.Reservation, error)
 	GetBookingByOrderID(orderID string) (*entity.Reservation, error)
+	CheckIn(userId int, checkInPayload entity.CheckInPayload) (*entity.Reservation, error)
 }
 
 type repository struct {
@@ -117,4 +118,33 @@ func (r *repository) validateReservation(checkIn, checkOut time.Time) error {
 	}
 
 	return nil
+}
+
+func (r *repository) CheckIn(userId int, checkInPayload entity.CheckInPayload) (*entity.Reservation, error) {
+	bookingCode := checkInPayload.OrderID
+
+	booking, err := r.GetBookingByOrderID(bookingCode)
+	if err != nil {
+		return nil, err
+	}
+
+	// Check if the booking belongs to the user
+	if int(booking.GuestID) != userId {
+		return nil, fmt.Errorf("Booking does not belong to the user")
+	}
+
+	// Check if the booking is already checked in
+	if booking.IsCheckedIn {
+		return nil, fmt.Errorf("Booking has already checked in")
+	}
+
+	// Update booking status
+	booking.IsCheckedIn = true
+	booking.Status = "checked-in"
+
+	if err := r.db.Save(&booking).Error; err != nil {
+		return nil, err
+	}
+
+	return booking, nil
 }
