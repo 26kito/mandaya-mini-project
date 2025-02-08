@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"net/http"
 	"reservation/entity"
 	"reservation/repository"
@@ -59,6 +60,8 @@ func (s *Service) GetBookingByOrderID(c echo.Context) error {
 			"message": err.Error(),
 		})
 	}
+
+	fmt.Println(booking)
 
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"message": "success",
